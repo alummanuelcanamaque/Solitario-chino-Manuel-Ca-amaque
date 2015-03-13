@@ -1,0 +1,26 @@
+Caracteres tablero:
+	- 	:exterior del tablero.
+	#	:hueco vacio dentro del tablero.
+	O	:bola dentro del tablero.
+	%	:hueco vacio y posicion de ultima bola del juego.
+	@	:bola dentro del tablero y posición de ultima bola del juego.
+
+
+Restricciones a la hora de crear un tablero:
+- Debe haber como minimo un hueco en el tablero, ya sea con # o con %.
+- Solo pùede haber un caracter de ultima posicion de bola, ya sea con % o con @.
+- La primera linea sera la cantidad de filas/columnas del tablero(siempre tableros cuadrados), y sera un numero entre 4 y 9.
+- El numero de filas y columnas del tablero debera coincidir con la cantidad de filas/columnas especificada.
+- Evitar los saltos de linea innecesarios.
+
+Ejemplo:
+
+6	--> Primera Linea.
+-OOOO-	
+OOOOOO
+OOO%OO
+OOOOOO
+-OOOO-
+
+
+preguntar lo de la clase solitario static si incluyo la clase ListaMovimientos dentro, pero que no es estatica

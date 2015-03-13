@@ -3,6 +3,7 @@
 import java.awt.Dimension;
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /*
@@ -15,7 +16,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author Manuel Cañamaque
  */
 public class Ventana extends javax.swing.JFrame {
-    String nivel;
+    static String nivel;
     /**
      * Creates new form Ventana
      */
@@ -23,7 +24,7 @@ public class Ventana extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         Solitario.pintarTablero();
-        this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 100);
+        this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
         newJPanel1.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
         newJPanel1.repaint();
         this.repaint();
@@ -39,12 +40,22 @@ public class Ventana extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton1 = new javax.swing.JButton();
         newJPanel1 = new NewJPanel();
         jPanel1 = new javax.swing.JPanel();
         boton_reiniciar = new javax.swing.JButton();
         boton_Abrir_Archivo = new javax.swing.JButton();
+        boton_Deshacer = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        selector_Bola = new javax.swing.JSlider();
+        selector_Casilla = new javax.swing.JSlider();
+
+        jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(300, 0));
         setPreferredSize(new java.awt.Dimension(700, 922));
         setResizable(false);
 
@@ -59,7 +70,7 @@ public class Ventana extends javax.swing.JFrame {
         );
         newJPanel1Layout.setVerticalGroup(
             newJPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 102, Short.MAX_VALUE)
+            .addGap(0, 262, Short.MAX_VALUE)
         );
 
         boton_reiniciar.setText("Reiniciar");
@@ -69,10 +80,17 @@ public class Ventana extends javax.swing.JFrame {
             }
         });
 
-        boton_Abrir_Archivo.setText("Seleccionar otro nivel...");
+        boton_Abrir_Archivo.setText("Seleccionar nivel...");
         boton_Abrir_Archivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_Abrir_ArchivoActionPerformed(evt);
+            }
+        });
+
+        boton_Deshacer.setText("Deshacer");
+        boton_Deshacer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton_DeshacerActionPerformed(evt);
             }
         });
 
@@ -82,18 +100,78 @@ public class Ventana extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(boton_reiniciar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(boton_Abrir_Archivo)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(boton_Abrir_Archivo, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                    .addComponent(boton_reiniciar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(boton_Deshacer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(boton_reiniciar)
-                    .addComponent(boton_Abrir_Archivo))
+                .addComponent(boton_Deshacer)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(boton_reiniciar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(boton_Abrir_Archivo)
+                .addContainerGap())
+        );
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        jLabel1.setText("Tablero:");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
+        jLabel2.setText("Bola:");
+
+        selector_Bola.setMaximum(75);
+        selector_Bola.setMinimum(25);
+        selector_Bola.setToolTipText("Tamaño Bola");
+        selector_Bola.setValue(40);
+        selector_Bola.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        selector_Bola.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                selector_BolaStateChanged(evt);
+            }
+        });
+
+        selector_Casilla.setMinimum(50);
+        selector_Casilla.setToolTipText("Tamaño Tablero");
+        selector_Casilla.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        selector_Casilla.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                selector_CasillaStateChanged(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(selector_Bola, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(selector_Casilla, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(selector_Casilla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addGap(1, 1, 1)
+                .addComponent(selector_Bola, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -101,15 +179,21 @@ public class Ventana extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(newJPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+            .addComponent(newJPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 40, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(newJPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
-                .addGap(11, 11, 11)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(newJPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         newJPanel1.getAccessibleContext().setAccessibleName("");
@@ -124,29 +208,48 @@ public class Ventana extends javax.swing.JFrame {
             Solitario.pintarTablero();
         }
         repaint();
-        
-        
     }//GEN-LAST:event_boton_reiniciarActionPerformed
 
     private void boton_Abrir_ArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_Abrir_ArchivoActionPerformed
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos TXT", "txt");
         fc.setFileFilter(filter);        
-        fc.setCurrentDirectory(new File("C:\\Users")); 
+        fc.setCurrentDirectory(new File("C:\\Users\\Manuel Cañamaque\\Google Drive\\Classroom\\1ºDAW\\Programacion\\Tema 5\\Solitario")); 
         int respuesta = fc.showOpenDialog(this);
         if (respuesta == JFileChooser.APPROVE_OPTION) {
             File archivoElegido = fc.getSelectedFile();
-            Solitario.pintarTablero(archivoElegido.getPath());
-            nivel=archivoElegido.getPath();
-            this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 100);
-            this.repaint();                        
-            Dimension dimension= new Dimension(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
-            newJPanel1.setSize(dimension);
-            newJPanel1.repaint();
-            
+            if(Solitario.pintarTablero(archivoElegido.getPath())){
+                nivel=archivoElegido.getPath();
+                this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
+                this.repaint();                        
+                Dimension dimension= new Dimension(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
+                newJPanel1.setSize(dimension);
+                newJPanel1.repaint();
+            }else{
+                JOptionPane.showMessageDialog(this, "El archivo elegido no tiene el formato adecuado,\nconsulte el documento de Instrucciones.");
+            }
         }
     }//GEN-LAST:event_boton_Abrir_ArchivoActionPerformed
-        
+
+    private void boton_DeshacerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_DeshacerActionPerformed
+        Solitario.deshacerMovimiento();
+        repaint();
+    }//GEN-LAST:event_boton_DeshacerActionPerformed
+
+    private void selector_CasillaStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_selector_CasillaStateChanged
+        newJPanel1.setAnchoCasilla(selector_Casilla.getValue());
+        this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
+        this.repaint();
+    }//GEN-LAST:event_selector_CasillaStateChanged
+
+    private void selector_BolaStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_selector_BolaStateChanged
+        newJPanel1.setAnchoBola(selector_Bola.getValue());
+        this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
+        this.repaint();
+    }//GEN-LAST:event_selector_BolaStateChanged
+    public static String getNivel(){
+        return nivel;
+    }   
     /**
      * @param args the command line arguments
      */
@@ -184,8 +287,15 @@ public class Ventana extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_Abrir_Archivo;
+    private javax.swing.JButton boton_Deshacer;
     private javax.swing.JButton boton_reiniciar;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private NewJPanel newJPanel1;
+    private javax.swing.JSlider selector_Bola;
+    private javax.swing.JSlider selector_Casilla;
     // End of variables declaration//GEN-END:variables
 }

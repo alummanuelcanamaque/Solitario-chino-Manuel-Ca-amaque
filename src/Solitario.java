@@ -17,11 +17,14 @@ import java.io.FileReader;
  */
 public class Solitario {
     private static char[][] tablero;
+    private static int tamañoTablero;
     public static final char FUERA = '-';
     public static final char VACIO = '#';
     public static final char BOLA = 'O';
     public static final char BOLA_Y_ULTIMA_CASILLA = '@';
     public static final char VACIO_Y_ULTIMA_CASILLA = '%';
+    
+    private static ListaMovimientos listaMovimientos = new ListaMovimientos();
             
     public static void pintarTablero(){
         tablero = new char [7][7];
@@ -38,85 +41,105 @@ public class Solitario {
                 }
             }
         }
+        listaMovimientos.borrarTodo();
     }
     
     public static boolean pintarTablero(String nombreArchivoNivel){        
         if(!comprobarFormatoArchivo(nombreArchivoNivel)){
-            System.out.println("Error: El archivo no tiene el formato correcto");
+            System.out.println("Error4: El archivo no tiene el formato correcto");
             return false;
         }else{
             String nombreFichero = nombreArchivoNivel;
             BufferedReader br = null;
             try {               
                 br = new BufferedReader(new FileReader(nombreFichero));               
-                int matrizX = Integer.valueOf(br.readLine());
-                int matrizY = Integer.valueOf(br.readLine());
-                if((matrizX>=4 && matrizX<=9) && (matrizY>=4 && matrizY<=9)){
-                    tablero = new char[matrizX][matrizY];
-                    String texto = br.readLine();
-
-                    while(texto != null){
-                        for (int y = 0; y < tablero.length; y++) {
-                            for (int x = 0; x < tablero.length; x++) {
-                                tablero[y][x]=texto.charAt(x);
-                            }
-                            texto = br.readLine();                        
+                br.readLine();               
+                tablero = new char[tamañoTablero][tamañoTablero];                    
+                String texto = br.readLine();
+                while(texto != null){
+                    for (int y = 0; y < tablero.length; y++) {                        
+                        for (int x = 0; x < tablero.length; x++) {
+                            tablero[y][x]=texto.charAt(x);
                         }
+                        texto = br.readLine();                        
                     }
-                }else{
-                    System.out.println("Error de lectura del fichero");
                 }
+                for (int y = 0; y < tablero.length; y++) {                
+                    for (int x = 0; x < tablero.length; x++) {
+                        System.out.print(""+tablero[y][x]);
+                    }
+                    System.out.print("\n");
+                }
+                System.out.println("\n");
             }
             catch (FileNotFoundException e) {
-                System.out.println("Error: Fichero no encontrado");
+                System.out.println("Error6: Fichero no encontrado");
                 System.out.println(e.getMessage());
+                e.printStackTrace();
             }
             catch(Exception e) {
-                System.out.println("Error de lectura del fichero");
+                System.out.println("Error7 de lectura del fichero");
                 System.out.println(e.getMessage());
+                e.printStackTrace();
             }
             finally {
                 try {
                     if(br != null)
-                        br.close();
+                        br.close();                    
                 }
                 catch (Exception e) {
-                    System.out.println("Error al cerrar el fichero");
+                    System.out.println("Error8 al cerrar el fichero");
                     System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }
-            
-            for (int y = 0; y < tablero.length; y++) {
-                System.out.print("\n");
-                for (int x = 0; x < tablero.length; x++) {
-                    System.out.print(""+tablero[y][x]);
-                }
-            }
-            return true;
+        listaMovimientos.borrarTodo();
+        return true;
         }
     }
     
     private static boolean comprobarFormatoArchivo(String nombreArchivoNivel){
-        String todo="";
+        String todo = "";
+        String texto ="";
         boolean correcto=false;
         int caracteresCorrectos=0;
-        
+        int huecosTablero=0;
+        int ultimaCasilla=0;        
+        int contadorFilas=-1;
+        int contadorColumnasCorrectas=0;        
         BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(nombreArchivoNivel));
-            String texto = br.readLine();            
-            while(texto != null){
+        try {            
+            br = new BufferedReader(new FileReader(nombreArchivoNivel));                        
+            texto=br.readLine();
+            while(texto != null){  
+                int numeroCaracteres=0;
+                switch(contadorFilas){ 
+                    case -1:
+                        tamañoTablero=Integer.valueOf(texto);
+                        break;
+                    default:
+                        for (int i = 0; i < texto.length(); i++){
+                            numeroCaracteres++;
+                        }
+                        break;
+                }
+                contadorFilas++;
                 todo+=texto;
-                texto=br.readLine();                
-            }            
+                if(numeroCaracteres==tamañoTablero){
+                    contadorColumnasCorrectas++;                    
+                } 
+                texto=br.readLine();
+            }
         }
         catch (FileNotFoundException e) {
-            System.out.println("Error: Fichero no encontrado");
+            System.out.println("Error1: Fichero no encontrado");
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         catch(Exception e) {
-            System.out.println("Error de lectura del fichero");
+            System.out.println("Error2 de lectura del fichero");
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
         finally {
             try {
@@ -124,20 +147,49 @@ public class Solitario {
                     br.close();
             }
             catch (Exception e) {
-                System.out.println("Error al cerrar el fichero");
+                System.out.println("Error3 al cerrar el fichero");
                 System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
         for (int i = 0; i < todo.length(); i++) {
             char c = todo.charAt(i);
-            if(c=='\r' || c=='\n' || c=='-' || c=='#' || c=='O' || c=='%' || c=='@'|| (c>='0' && c<='9')){
-                ++caracteresCorrectos;
+            switch(c){
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case '\r':
+                case '\n':
+                case '-':
+                case 'O':
+                    caracteresCorrectos++;
+                    break;
+                case '%': 
+                    ultimaCasilla++;
+                    caracteresCorrectos++;
+                    huecosTablero++;
+                    break;
+                case '#':
+                    caracteresCorrectos++;
+                    huecosTablero++;
+                    break;
+                case '@':
+                    caracteresCorrectos++;
+                    ultimaCasilla++;
+                    break;
             }
-            
         }
-        if (caracteresCorrectos==todo.length()){
+        if (caracteresCorrectos==todo.length()-1 && ultimaCasilla==1 && (tamañoTablero>=4 && tamañoTablero<=9)
+                && contadorFilas==tamañoTablero && contadorColumnasCorrectas==contadorFilas && huecosTablero>=1){
             correcto=true;
-        }
+        }        
         return correcto;
     }
     
@@ -188,32 +240,21 @@ public class Solitario {
     
     public static boolean comprobarFinJuego(){
         boolean fin=false;
-        int contador=0;
         int Y_Final_Juego=0;
         int X_Final_Juego=0;
         int numeroBolasTotales=0;
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
-                switch(tablero[y][x]){
-                    case(Solitario.VACIO):
-                        ++contador;
-                        break;
-                    case(Solitario.BOLA):
-                        ++numeroBolasTotales;
-                        break;
-                    case(Solitario.BOLA_Y_ULTIMA_CASILLA):
-                        ++numeroBolasTotales;
-                        Y_Final_Juego=y;
-                        X_Final_Juego=x;
-                        break;
-                    case(Solitario.VACIO_Y_ULTIMA_CASILLA):
-                        Y_Final_Juego=y;
-                        X_Final_Juego=x;
-                        break;
-                }  
+        for (int y = 0; y < tablero.length; y++) {
+            for (int x = 0; x < tablero.length; x++) {
+                if(tablero[y][x]==BOLA || tablero[y][x]==BOLA_Y_ULTIMA_CASILLA){
+                    numeroBolasTotales++;
+                }
+                if(tablero[y][x]==BOLA_Y_ULTIMA_CASILLA || tablero[y][x]==VACIO_Y_ULTIMA_CASILLA){
+                    Y_Final_Juego=y;
+                    X_Final_Juego=x;
+                }
             }
         }
-        if(contador==numeroBolasTotales-1 && tablero[Y_Final_Juego][X_Final_Juego]==BOLA){
+        if(numeroBolasTotales==1 && tablero[Y_Final_Juego][X_Final_Juego]==BOLA_Y_ULTIMA_CASILLA){
             fin=true;
         }
         return fin;
@@ -273,11 +314,73 @@ public class Solitario {
                     }
                 }
             }
+            listaMovimientos.añadirMovimiento(origenY, origenX, destinoY, destinoX);
             return true;
         }else{
             return false;
         }
     }
+    
+    public static void deshacerMovimiento(){
+        if(!listaMovimientos.comprobarVacio()){
+           int origenY=listaMovimientos.obtenerUltimoMovimiento().getOrigenY();
+            int origenX=listaMovimientos.obtenerUltimoMovimiento().getOrigenX();
+            int destinoY=listaMovimientos.obtenerUltimoMovimiento().getDestinoY();
+            int destinoX=listaMovimientos.obtenerUltimoMovimiento().getDestinoX();
+            //Sustituimos el vacio del origen por una bola, segun si es ultima casilla o no.
+            if(tablero[origenY][origenX]==VACIO){
+                tablero[origenY][origenX]=BOLA;
+            }else{
+                tablero[origenY][origenX]=BOLA_Y_ULTIMA_CASILLA;
+            }
+
+            //Sustituimos la bola de la casilla de destino por vacio, segun si es ultima casilla o no.
+            if(tablero[destinoY][destinoX]==BOLA){
+                tablero[destinoY][destinoX]=VACIO;
+            }else{
+                tablero[destinoY][destinoX]=VACIO_Y_ULTIMA_CASILLA;
+            }
+
+            //Comprobamos la bola intermedia y la sustituimos segun si es ultima casilla o no.
+            //Misma coordenada Y, hacia la derecha.
+            if(origenX==destinoX && destinoY>origenY){                
+                if(tablero[origenY+1][origenX]==VACIO){
+                    tablero[origenY+1][origenX]=BOLA;
+                }else{
+                    tablero[origenY+1][origenX]=BOLA_Y_ULTIMA_CASILLA;
+                }
+                //Misma coordenada Y, hacia la izquierda
+            }else{
+                if(origenX==destinoX && destinoY<origenY){                        
+                    if(tablero[origenY-1][origenX]==VACIO){
+                        tablero[origenY-1][origenX]=BOLA;
+                    }else{
+                        tablero[origenY-1][origenX]=BOLA_Y_ULTIMA_CASILLA;
+                    }
+                }else{
+                    //Misma coordenada X, hacia abajo.
+                    if(origenY==destinoY && destinoX>origenX){
+                        if(tablero[origenY][origenX+1]==VACIO){
+                            tablero[origenY][origenX+1]=BOLA;
+                        }else{
+                            tablero[origenY][origenX+1]=BOLA_Y_ULTIMA_CASILLA;
+                        }
+                    }else{
+                        //Misma coordenada X, hacia arriba.
+                        if(origenY==destinoY && destinoX<origenX){
+                            if(tablero[origenY][origenX-1]==VACIO){
+                                tablero[origenY][origenX-1]=BOLA;
+                            }else{
+                                tablero[origenY][origenX-1]=BOLA_Y_ULTIMA_CASILLA;
+                            } 
+                        }                        
+                    }
+                }
+            }
+            listaMovimientos.borrarUltimoMovimiento(); 
+        }
+        
+    }       
     
     public static char[][] getTablero() {
         return tablero;

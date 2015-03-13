@@ -34,13 +34,28 @@ public class NewJPanel extends javax.swing.JPanel {
     
     public NewJPanel() {
         initComponents();
-    }  
-    
+    }
+    public void setAnchoCasilla(int ancho){
+        if(ancho>50 && ancho<100){
+            anchoCasilla=ancho;
+            if(anchoBola>anchoCasilla){
+                anchoBola=ancho;
+            }
+        }
+        repaint();
+    }
+    public void setAnchoBola(int ancho){
+        if (ancho<=anchoCasilla){
+            anchoBola=ancho;
+        }
+        repaint();
+    }
         
     @Override
     public void paint(Graphics g) {
         if(Solitario.getTablero()!=null){
-            super.paint(g);        
+            super.paint(g);
+    //Borde del tablero del Solitario original.
     //        int[]xPoints = {200,500,500,700,700,500,500,200,200,0,0,200,200};
     //        int[]yPoints = {0,0,200,200,500,500,700,700,500,500,200,200,0};
     //        g.drawPolygon(xPoints, yPoints, 13);
@@ -49,17 +64,22 @@ public class NewJPanel extends javax.swing.JPanel {
             
             for (int y = 0; y < Solitario.getTablero().length; y++) {
                 for (int x = 0; x < Solitario.getTablero().length; x++) {
+                    if(Solitario.getTablero()[y][x]==Solitario.BOLA_Y_ULTIMA_CASILLA || Solitario.getTablero()[y][x]==Solitario.VACIO_Y_ULTIMA_CASILLA){
+                        g.setColor(Color.YELLOW);
+                        g.fillRect(x*anchoCasilla+(anchoCasilla/2-anchoBola/2), y*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
+                    }
                     if(Solitario.getTablero()[y][x]==Solitario.BOLA || Solitario.getTablero()[y][x]==Solitario.BOLA_Y_ULTIMA_CASILLA){
-                        g.setColor(colorBola);
+                        g.setColor(Color.BLUE);
                         g.fillOval(x*anchoCasilla+(anchoCasilla/2-anchoBola/2), y*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
                     }
                     if(Solitario.getTablero()[y][x]==Solitario.VACIO || Solitario.getTablero()[y][x]==Solitario.VACIO_Y_ULTIMA_CASILLA){
                         g.setColor(Color.BLACK);
                         g.fillOval(x*anchoCasilla+(anchoCasilla/2-anchoBola/2), y*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
-                    }                    
+                    }
+                    
                 }
             }
-            if(arrastrando && Solitario.getTablero()[coordYInicialTablero][coordXInicialTablero]==Solitario.BOLA){
+            if(arrastrando && (Solitario.getTablero()[coordYInicialTablero][coordXInicialTablero]==Solitario.BOLA || Solitario.getTablero()[coordYInicialTablero][coordXInicialTablero]==Solitario.BOLA_Y_ULTIMA_CASILLA)){
                 g.setColor(Color.BLACK);
                 g.fillOval(coordXInicialTablero*anchoCasilla+(anchoCasilla/2-anchoBola/2), coordYInicialTablero*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
                 g.setColor(colorBola);
@@ -124,10 +144,15 @@ public class NewJPanel extends javax.swing.JPanel {
                 coordYFinal = evt.getY();
                 coordXFinalTablero= coordXFinal/anchoCasilla;
                 coordYFinalTablero= coordYFinal/anchoCasilla;                
-                Solitario.mover(coordYInicialTablero, coordXInicialTablero, coordYFinalTablero, coordXFinalTablero);         
+                Solitario.mover(coordYInicialTablero, coordXInicialTablero, coordYFinalTablero, coordXFinalTablero);
+                
                 if (Solitario.comprobarFinJuego()) {                    
                     JOptionPane.showMessageDialog(this, "Enhorabuena has ganado");
-                    Solitario.pintarTablero();                     
+                    if(Ventana.getNivel()!=null){
+                        Solitario.pintarTablero(Ventana.getNivel());
+                    }else{
+                        Solitario.pintarTablero();
+        }
                 }
                 repaint();
             }
