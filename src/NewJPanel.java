@@ -33,10 +33,7 @@ public class NewJPanel extends javax.swing.JPanel {
     Color colorTablero = new Color(88, 88, 88);
     
     public NewJPanel() {
-        initComponents();        
-        
-        
-        
+        initComponents();
     }  
     
         
@@ -48,25 +45,25 @@ public class NewJPanel extends javax.swing.JPanel {
     //        int[]yPoints = {0,0,200,200,500,500,700,700,500,500,200,200,0};
     //        g.drawPolygon(xPoints, yPoints, 13);
     //        g.setColor(colorTablero);
-    //        g.fillPolygon(xPoints, yPoints, 13);        
-
+    //        g.fillPolygon(xPoints, yPoints, 13);
+            
             for (int y = 0; y < Solitario.getTablero().length; y++) {
                 for (int x = 0; x < Solitario.getTablero().length; x++) {
-                    if(Solitario.getTablero()[y][x]==Solitario.BOLA){
+                    if(Solitario.getTablero()[y][x]==Solitario.BOLA || Solitario.getTablero()[y][x]==Solitario.BOLA_Y_ULTIMA_CASILLA){
                         g.setColor(colorBola);
-                        g.fillOval(x*anchoCasilla+anchoCasilla/4, y*anchoCasilla+anchoCasilla/4, anchoBola, anchoBola);
+                        g.fillOval(x*anchoCasilla+(anchoCasilla/2-anchoBola/2), y*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
                     }
-                    if(Solitario.getTablero()[y][x]==Solitario.VACIO){
+                    if(Solitario.getTablero()[y][x]==Solitario.VACIO || Solitario.getTablero()[y][x]==Solitario.VACIO_Y_ULTIMA_CASILLA){
                         g.setColor(Color.BLACK);
-                        g.fillOval(x*anchoCasilla+anchoCasilla/4, y*anchoCasilla+anchoCasilla/4, anchoBola, anchoBola);
-                    }
+                        g.fillOval(x*anchoCasilla+(anchoCasilla/2-anchoBola/2), y*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
+                    }                    
                 }
             }
-            if(arrastrando && Solitario.getTablero()[coordXInicialTablero][coordYInicialTablero]==Solitario.BOLA){
-                System.out.println("Inicial: "+coordXInicial+" "+coordYInicial);            
-                System.out.println("Final: "+coordXFinal+" "+coordYFinal);
-                Solitario.getTablero()[coordXInicialTablero][coordYInicialTablero]=Solitario.VACIO;
-                g.fillOval(coordXFinal-anchoBola/2, coordYFinal-anchoBola/2, anchoBola, anchoBola);
+            if(arrastrando && Solitario.getTablero()[coordYInicialTablero][coordXInicialTablero]==Solitario.BOLA){
+                g.setColor(Color.BLACK);
+                g.fillOval(coordXInicialTablero*anchoCasilla+(anchoCasilla/2-anchoBola/2), coordYInicialTablero*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
+                g.setColor(colorBola);
+                g.fillOval(coordXFinal-(anchoBola/2), coordYFinal-(anchoBola/2), anchoBola, anchoBola);
             }
         }
     }
@@ -108,20 +105,17 @@ public class NewJPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
-        System.out.println("Pressed--> X: "+coordXInicial+" XT: "+coordXInicialTablero+" Y: "+coordYInicial+" YT: "+coordYInicialTablero);
-        Point punto = new Point((evt.getX()/anchoCasilla)*anchoCasilla+anchoBola,(evt.getY()/anchoCasilla)*anchoCasilla+anchoBola );
-        if(evt.getPoint().distance(punto)<anchoBola/2){
+        Point punto = new Point((((evt.getX()/anchoCasilla)*anchoCasilla)+anchoCasilla/2),(((evt.getY()/anchoCasilla)*anchoCasilla)+anchoCasilla/2));        
+        if(evt.getPoint().distance(punto)<=anchoBola/2){            
             coordXInicial = evt.getX();
             coordYInicial = evt.getY();
             coordXInicialTablero= coordXInicial/anchoCasilla;
             coordYInicialTablero= coordYInicial/anchoCasilla;
-            mover=true;            
-        }
-        
+            mover=true;
+        }        
     }//GEN-LAST:event_formMousePressed
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
-        System.out.println("Released--> X: "+coordXInicial+" XT: "+coordXInicialTablero+" Y: "+coordYInicial+" YT: "+coordYInicialTablero);
         try {
             if (mover) {
                 mover = false;
@@ -129,34 +123,27 @@ public class NewJPanel extends javax.swing.JPanel {
                 coordXFinal = evt.getX();
                 coordYFinal = evt.getY();
                 coordXFinalTablero= coordXFinal/anchoCasilla;
-                coordYFinalTablero= coordYFinal/anchoCasilla;
-                if (!Solitario.comprobarMovimiento(coordXInicialTablero, coordYInicialTablero, coordXFinalTablero, coordYFinalTablero)
-                        && ((coordXInicialTablero > 1 && coordXInicialTablero < 5) || (coordYInicialTablero > 1 && coordYInicialTablero < 5))) {                    
-                    Solitario.getTablero()[coordXInicial][coordYInicial] = Solitario.BOLA;
-                }
-                Solitario.mover(coordXInicialTablero, coordYInicialTablero, coordXFinalTablero, coordYFinalTablero);
-                repaint();
+                coordYFinalTablero= coordYFinal/anchoCasilla;                
+                Solitario.mover(coordYInicialTablero, coordXInicialTablero, coordYFinalTablero, coordXFinalTablero);         
                 if (Solitario.comprobarFinJuego()) {                    
                     JOptionPane.showMessageDialog(this, "Enhorabuena has ganado");
-                    Solitario.pintarTablero();
-                     repaint();
+                    Solitario.pintarTablero();                     
                 }
+                repaint();
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             repaint();
-        }
-        
+        }        
     }//GEN-LAST:event_formMouseReleased
 
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
-        System.out.println("Dragged--> X: "+coordXInicial+" XT: "+coordXInicialTablero+" Y: "+coordYInicial+" YT: "+coordYInicialTablero);
         if(mover){
             arrastrando=true;        
             coordXFinal = evt.getX();
             coordYFinal = evt.getY();
             coordXFinalTablero= coordXFinal/anchoCasilla;
             coordYFinalTablero= coordYFinal/anchoCasilla;
-            repaint();
+            repaint(); 
         }
     }//GEN-LAST:event_formMouseDragged
 

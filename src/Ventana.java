@@ -1,5 +1,6 @@
 
 
+import java.awt.Dimension;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -14,17 +15,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author Manuel Cañamaque
  */
 public class Ventana extends javax.swing.JFrame {
-
+    String nivel;
     /**
      * Creates new form Ventana
      */
     public Ventana() {        
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setSize(380,450);
-        newJPanel1.setSize(380, 350);
-        
-        
+        Solitario.pintarTablero();
+        this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 100);
+        newJPanel1.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
+        newJPanel1.repaint();
+        this.repaint();
 
     }
 
@@ -44,6 +46,7 @@ public class Ventana extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(700, 922));
+        setResizable(false);
 
         newJPanel1.setMaximumSize(new java.awt.Dimension(1200, 1200));
         newJPanel1.setPreferredSize(new java.awt.Dimension(700, 700));
@@ -56,7 +59,7 @@ public class Ventana extends javax.swing.JFrame {
         );
         newJPanel1Layout.setVerticalGroup(
             newJPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 207, Short.MAX_VALUE)
+            .addGap(0, 102, Short.MAX_VALUE)
         );
 
         boton_reiniciar.setText("Reiniciar");
@@ -98,17 +101,14 @@ public class Ventana extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(newJPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 71, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(newJPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(newJPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
+                .addComponent(newJPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                .addGap(11, 11, 11)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -118,7 +118,11 @@ public class Ventana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void boton_reiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_reiniciarActionPerformed
-        Solitario.pintarTablero();
+        if(nivel!=null){
+            Solitario.pintarTablero(nivel);
+        }else{
+            Solitario.pintarTablero();
+        }
         repaint();
         
         
@@ -128,14 +132,16 @@ public class Ventana extends javax.swing.JFrame {
         JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos TXT", "txt");
         fc.setFileFilter(filter);        
-        fc.setCurrentDirectory(new File("C:\\Users\\Manuel Cañamaque\\Google Drive\\Classroom\\1ºDAW\\Programacion\\Tema 5\\Solitario")); 
+        fc.setCurrentDirectory(new File("C:\\Users")); 
         int respuesta = fc.showOpenDialog(this);
         if (respuesta == JFileChooser.APPROVE_OPTION) {
             File archivoElegido = fc.getSelectedFile();
-            Solitario.pintarTablero(archivoElegido.getName());            
-            this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+30, Solitario.getTablero().length * newJPanel1.anchoCasilla + 100);
-            this.repaint();
-            newJPanel1.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+30,Solitario.getTablero().length * newJPanel1.anchoCasilla+30);            
+            Solitario.pintarTablero(archivoElegido.getPath());
+            nivel=archivoElegido.getPath();
+            this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 100);
+            this.repaint();                        
+            Dimension dimension= new Dimension(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
+            newJPanel1.setSize(dimension);
             newJPanel1.repaint();
             
         }
