@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<MOVIMIENTOS>
+   <MOVIMIENTO>
+      <NUMEROMOVIMIENTO>1</NUMEROMOVIMIENTO>
+      <X_ORIGEN>3</X_ORIGEN>
+      <Y_ORIGEN>1</Y_ORIGEN>
+      <X_DESTINO>1</X_DESTINO>
+      <Y_DESTINO>1</Y_DESTINO>
+   </MOVIMIENTO>
+</MOVIMIENTOS>

@@ -2,6 +2,8 @@
 
 import java.awt.Dimension;
 import java.io.File;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -17,6 +19,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class Ventana extends javax.swing.JFrame {
     static String nivel;
+    static String nombreTablero;
+    
+    static ResourceBundle bundle = ResourceBundle.getBundle("res/Strings", Locale.getDefault());
     /**
      * Creates new form Ventana
      */
@@ -24,10 +29,16 @@ public class Ventana extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         Solitario.pintarTablero();
+        CSV.crearArchivoCSV();
         this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
         newJPanel1.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
         newJPanel1.repaint();
         this.repaint();
+
+//        UIManager.put("OptionPane.cancelButtonText", "Annuler");
+//        UIManager.put("OptionPane.noButtonText", "Non");
+//        UIManager.put("OptionPane.okButtonText", "D'accord");
+//        UIManager.put("OptionPane.yesButtonText", "Oui");
 
     }
 
@@ -55,9 +66,16 @@ public class Ventana extends javax.swing.JFrame {
         jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("res/Strings"); // NOI18N
+        setTitle(bundle.getString("titulo")); // NOI18N
         setMinimumSize(new java.awt.Dimension(300, 0));
         setPreferredSize(new java.awt.Dimension(700, 922));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         newJPanel1.setMaximumSize(new java.awt.Dimension(1200, 1200));
         newJPanel1.setPreferredSize(new java.awt.Dimension(700, 700));
@@ -73,21 +91,22 @@ public class Ventana extends javax.swing.JFrame {
             .addGap(0, 262, Short.MAX_VALUE)
         );
 
-        boton_reiniciar.setText("Reiniciar");
+        boton_reiniciar.setText(bundle.getString("botonReiniciar")); // NOI18N
+        boton_reiniciar.setActionCommand(bundle.getString("botonReiniciar")); // NOI18N
         boton_reiniciar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_reiniciarActionPerformed(evt);
             }
         });
 
-        boton_Abrir_Archivo.setText("Seleccionar nivel...");
+        boton_Abrir_Archivo.setText(bundle.getString("botonNivel")); // NOI18N
         boton_Abrir_Archivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_Abrir_ArchivoActionPerformed(evt);
             }
         });
 
-        boton_Deshacer.setText("Deshacer");
+        boton_Deshacer.setText(bundle.getString("botonDeshacer")); // NOI18N
         boton_Deshacer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 boton_DeshacerActionPerformed(evt);
@@ -119,10 +138,10 @@ public class Ventana extends javax.swing.JFrame {
         );
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jLabel1.setText("Tablero:");
+        jLabel1.setText(bundle.getString("labelTablero")); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 9)); // NOI18N
-        jLabel2.setText("Bola:");
+        jLabel2.setText(bundle.getString("labelBolas")); // NOI18N
 
         selector_Bola.setMaximum(75);
         selector_Bola.setMinimum(25);
@@ -202,12 +221,8 @@ public class Ventana extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void boton_reiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_reiniciarActionPerformed
-        if(nivel!=null){
-            Solitario.pintarTablero(nivel);
-        }else{
-            Solitario.pintarTablero();
-        }
-        repaint();
+        Solitario.reiniciar(nivel, nombreTablero);            
+        repaint();        
     }//GEN-LAST:event_boton_reiniciarActionPerformed
 
     private void boton_Abrir_ArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_Abrir_ArchivoActionPerformed
@@ -218,15 +233,17 @@ public class Ventana extends javax.swing.JFrame {
         int respuesta = fc.showOpenDialog(this);
         if (respuesta == JFileChooser.APPROVE_OPTION) {
             File archivoElegido = fc.getSelectedFile();
-            if(Solitario.pintarTablero(archivoElegido.getPath())){
+            if(Solitario.comprobarFormatoArchivo(archivoElegido.getPath())){
                 nivel=archivoElegido.getPath();
+                nombreTablero = archivoElegido.getName();
+                Solitario.reiniciar(nivel, nombreTablero);
                 this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
-                this.repaint();                        
+                this.repaint();
                 Dimension dimension= new Dimension(Solitario.getTablero().length * newJPanel1.anchoCasilla,Solitario.getTablero().length * newJPanel1.anchoCasilla);
                 newJPanel1.setSize(dimension);
                 newJPanel1.repaint();
-            }else{
-                JOptionPane.showMessageDialog(this, "El archivo elegido no tiene el formato adecuado,\nconsulte el documento de Instrucciones.");
+            }else{                
+                JOptionPane.showMessageDialog(this, bundle.getString("mensajeError"), bundle.getString("mensajeErrorTitulo"), JOptionPane.ERROR_MESSAGE);                
             }
         }
     }//GEN-LAST:event_boton_Abrir_ArchivoActionPerformed
@@ -247,9 +264,12 @@ public class Ventana extends javax.swing.JFrame {
         this.setSize(Solitario.getTablero().length * newJPanel1.anchoCasilla+6, Solitario.getTablero().length * newJPanel1.anchoCasilla + 160);
         this.repaint();
     }//GEN-LAST:event_selector_BolaStateChanged
-    public static String getNivel(){
-        return nivel;
-    }   
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        CSV.cerrarArchivoCSV();
+        
+    }//GEN-LAST:event_formWindowClosing
+       
     /**
      * @param args the command line arguments
      */

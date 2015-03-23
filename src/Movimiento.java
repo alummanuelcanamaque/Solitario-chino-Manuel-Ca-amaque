@@ -1,3 +1,6 @@
+
+import java.util.Calendar;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -14,11 +17,13 @@ public class Movimiento {
     private int destinoX;
     private int destinoY;
     
+    
     public Movimiento(int origenY, int origenX, int destinoY, int destinoX){
         this.origenX=origenX;
         this.origenY=origenY;
         this.destinoX=destinoX;
         this.destinoY=destinoY;
+        
     }
 
     public int getOrigenX() {

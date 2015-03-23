@@ -1,8 +1,10 @@
 
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import javax.swing.JOptionPane;
+import javax.xml.transform.TransformerException;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,14 +25,16 @@ public class NewJPanel extends javax.swing.JPanel {
     int coordXFinal;
     int coordXFinalTablero;
     int coordYFinal;
-    int coordYFinalTablero;
+    int coordYFinalTablero;   
+    
     
     boolean arrastrando = false;
     boolean mover = false;
+   
     
     
-    Color colorBola = new Color(1, 1, 223);
-    Color colorTablero = new Color(88, 88, 88);
+//    Color colorBola = new Color(1, 1, 223);
+//    Color colorTablero = new Color(88, 88, 88);
     
     public NewJPanel() {
         initComponents();
@@ -82,7 +86,7 @@ public class NewJPanel extends javax.swing.JPanel {
             if(arrastrando && (Solitario.getTablero()[coordYInicialTablero][coordXInicialTablero]==Solitario.BOLA || Solitario.getTablero()[coordYInicialTablero][coordXInicialTablero]==Solitario.BOLA_Y_ULTIMA_CASILLA)){
                 g.setColor(Color.BLACK);
                 g.fillOval(coordXInicialTablero*anchoCasilla+(anchoCasilla/2-anchoBola/2), coordYInicialTablero*anchoCasilla+(anchoCasilla/2-anchoBola/2), anchoBola, anchoBola);
-                g.setColor(colorBola);
+                g.setColor(Color.BLUE);
                 g.fillOval(coordXFinal-(anchoBola/2), coordYFinal-(anchoBola/2), anchoBola, anchoBola);
             }
         }
@@ -146,18 +150,20 @@ public class NewJPanel extends javax.swing.JPanel {
                 coordYFinalTablero= coordYFinal/anchoCasilla;                
                 Solitario.mover(coordYInicialTablero, coordXInicialTablero, coordYFinalTablero, coordXFinalTablero);
                 
-                if (Solitario.comprobarFinJuego()) {                    
-                    JOptionPane.showMessageDialog(this, "Enhorabuena has ganado");
-                    if(Ventana.getNivel()!=null){
-                        Solitario.pintarTablero(Ventana.getNivel());
-                    }else{
-                        Solitario.pintarTablero();
-        }
+                if (Solitario.comprobarFinJuego()) {
+                    
+                    JOptionPane.showMessageDialog(this, Ventana.bundle.getString("mensajeVictoria"), Ventana.bundle.getString("mensajeVictoriaTitulo"), JOptionPane.INFORMATION_MESSAGE);                
+            
+                    Solitario.reiniciar(Ventana.nivel, Ventana.nombreTablero);
+        
                 }
                 repaint();
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             repaint();
+        } catch (TransformerException ex) {
+            ex.getMessage();
+            ex.printStackTrace();
         }        
     }//GEN-LAST:event_formMouseReleased
 

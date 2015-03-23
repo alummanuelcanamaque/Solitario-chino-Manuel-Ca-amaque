@@ -1,7 +1,15 @@
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.text.DateFormat;
+import java.util.Calendar;
+import javax.xml.transform.TransformerException;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.lang3.time.StopWatch;
 
 
 
@@ -22,32 +30,60 @@ public class Solitario {
     public static final char VACIO = '#';
     public static final char BOLA = 'O';
     public static final char BOLA_Y_ULTIMA_CASILLA = '@';
-    public static final char VACIO_Y_ULTIMA_CASILLA = '%';
+    public static final char VACIO_Y_ULTIMA_CASILLA = '%';   
     
     private static ListaMovimientos listaMovimientos = new ListaMovimientos();
-            
-    public static void pintarTablero(){
-        tablero = new char [7][7];
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero.length; j++) {
-                if((i<2 || i>4) && (j<2 || j>4)){
-                    tablero[i][j]=FUERA;                    
-                }else{
-                    if(i==3 && j==3){
-                        tablero[i][j]=VACIO_Y_ULTIMA_CASILLA;
-                    }else{
-                        tablero[i][j]=BOLA;
-                    }
+    
+    private static StopWatch tiempo = new StopWatch();
+    
+    
+    public static void reiniciar(String nivel, String nombreTablero) {
+        int contadorBolas=0;
+        
+        //Cuenta las bolas restantes cuando se reinicio, para mostrarlo en el CSV.
+        for (int y = 0; y < tablero.length; y++) {
+            for (int x = 0; x < tablero.length; x++) {
+                if(tablero[y][x]==BOLA || tablero[y][x]==BOLA_Y_ULTIMA_CASILLA){
+                    contadorBolas++;
                 }
             }
         }
+        CSV.añadirArchivoCSV(nombreTablero, contadorBolas, tiempo);
+        
+        //Pinta de nuevo el tablero, si se ha cargado uno alguno se pinta ese, si no pinta el tablero por defecto.
+        if(nivel!=null){
+            Solitario.pintarTablero(nivel);            
+        }else{
+            Solitario.pintarTablero();
+        }
+        if(tiempo.isStarted()){
+            tiempo.stop();
+            tiempo.reset();        
+        }        
+        listaMovimientos.crearXML();
         listaMovimientos.borrarTodo();
+    }    
+    
+    public static void pintarTablero(){
+        tablero = new char [7][7];
+        for (int y = 0; y < tablero.length; y++) {
+            for (int x = 0; x < tablero.length; x++) {
+                if((y<2 || y>4) && (x<2 || x>4)){
+                    tablero[y][x]=FUERA;                    
+                }else{
+                    if(y==3 && x==3){
+                        tablero[y][x]=VACIO_Y_ULTIMA_CASILLA;
+                    }else{
+                        tablero[y][x]=BOLA;
+                    }
+                }
+            }
+        }        
     }
     
-    public static boolean pintarTablero(String nombreArchivoNivel){        
+    public static void pintarTablero(String nombreArchivoNivel){        
         if(!comprobarFormatoArchivo(nombreArchivoNivel)){
             System.out.println("Error4: El archivo no tiene el formato correcto");
-            return false;
         }else{
             String nombreFichero = nombreArchivoNivel;
             BufferedReader br = null;
@@ -64,6 +100,8 @@ public class Solitario {
                         texto = br.readLine();                        
                     }
                 }
+                
+                //Pintar en salida
                 for (int y = 0; y < tablero.length; y++) {                
                     for (int x = 0; x < tablero.length; x++) {
                         System.out.print(""+tablero[y][x]);
@@ -93,12 +131,10 @@ public class Solitario {
                     e.printStackTrace();
                 }
             }
-        listaMovimientos.borrarTodo();
-        return true;
         }
     }
     
-    private static boolean comprobarFormatoArchivo(String nombreArchivoNivel){
+    public static boolean comprobarFormatoArchivo(String nombreArchivoNivel){
         String todo = "";
         String texto ="";
         boolean correcto=false;
@@ -193,6 +229,8 @@ public class Solitario {
         return correcto;
     }
     
+    
+    
     public static boolean comprobarMovimiento(int origenY, int origenX, int destinoY, int destinoX){
         boolean correcto=true;
         
@@ -238,7 +276,7 @@ public class Solitario {
         return correcto;
     }
     
-    public static boolean comprobarFinJuego(){
+    public static boolean comprobarFinJuego() throws TransformerException{
         boolean fin=false;
         int Y_Final_Juego=0;
         int X_Final_Juego=0;
@@ -256,6 +294,7 @@ public class Solitario {
         }
         if(numeroBolasTotales==1 && tablero[Y_Final_Juego][X_Final_Juego]==BOLA_Y_ULTIMA_CASILLA){
             fin=true;
+            listaMovimientos.crearXML();
         }
         return fin;
     }
@@ -313,6 +352,9 @@ public class Solitario {
                         }                        
                     }
                 }
+            }
+            if(!tiempo.isStarted()){
+                tiempo.start();                
             }
             listaMovimientos.añadirMovimiento(origenY, origenX, destinoY, destinoX);
             return true;
