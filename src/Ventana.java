@@ -266,6 +266,7 @@ public class Ventana extends javax.swing.JFrame {
     }//GEN-LAST:event_selector_BolaStateChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        Solitario.reiniciar(nivel, nombreTablero);
         CSV.cerrarArchivoCSV();
         
     }//GEN-LAST:event_formWindowClosing

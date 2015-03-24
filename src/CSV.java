@@ -1,6 +1,8 @@
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -21,14 +23,18 @@ public  class CSV {
     private static Calendar calendar = Calendar.getInstance();
     
     private static DateFormat formatoDate = DateFormat.getDateInstance();
-    
-    private static File f = new File("jugadas.csv"); 
+    private static File f=new File("jugadas.csv");
     private static BufferedWriter bw = null;
+    
     
     public static void crearArchivoCSV(){
         try {
-            bw = new BufferedWriter(new FileWriter(f, true));
-            bw.write("Fecha; Nombre Nivel;, Bolas Restantes; Tiempo Empleado"); 
+            if(!f.exists()){                
+                bw = new BufferedWriter(new FileWriter(f, true));
+                bw.write("Fecha; Nombre Nivel;, Bolas Restantes; Tiempo Empleado"); 
+            }else{
+                bw = new BufferedWriter(new FileWriter(f, true));
+            }
         }
         catch(Exception e) {
            System.out.println("Error de escritura del fichero");
